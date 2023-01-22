@@ -56,22 +56,20 @@ public class ChessMatch {
 		validateSourcePosition(position);
 		return board.piece(position).possibleMoves();
 	}
-
+	
+	//Problema estar no if, analisar ele
 	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		Position source = sourcePosition.toPosition();
 		Position target = targetPosition.toPosition();
-
 		validateSourcePosition(source);
 		validateTargetPosition(source, target);
-
 		Piece capturedPiece = makeMove(source, target);
 		
-		if (testeCheck(currentPlayer)) {
+		if (testCheck(currentPlayer)) {
 			undoMove(source, target, capturedPiece);
 			throw new ChessException("You can't put yourself in check");
-			
 		}
-		check = (testeCheck(opponent(currentPlayer))) ? true : false;
+		check = (testCheck(opponent(currentPlayer))) ? true : false;
 		
 		nextTurn();
 		return (ChessPiece) capturedPiece;
@@ -130,20 +128,18 @@ public class ChessMatch {
 	}
 
 	private ChessPiece king(Color color) {
-		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece) x).getColor() == color)
-				.collect(Collectors.toList());
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece) x).getColor() == color).collect(Collectors.toList());
 		for (Piece p : list) {
 			if (p instanceof King) {
-				return (ChessPiece) p;
+				return (ChessPiece)p;
 			}
 		}
 		throw new IllegalStateException("There is no" + color + "king on the board");
 	}
 
-	private boolean testeCheck(Color color) {
+	private boolean testCheck(Color color) {
 		Position kingPosition = king(color).getChessPosition().toPosition();
-		List<Piece> opponentPieces = piecesOnTheBoard.stream()
-				.filter(x -> ((ChessPiece) x).getColor() == opponent(color)).collect(Collectors.toList());
+		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
 		for (Piece p : opponentPieces) {
 			boolean[][] mat = p.possibleMoves();
 			if (mat[kingPosition.getRow()][kingPosition.getColumn()]) {
